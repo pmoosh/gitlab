@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "gitlab.fullname" . }}
+  labels:
+    app: {{ template "gitlab.name" . }}
+    chart: {{ template "gitlab.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  {{- range $key, $value := .Values.ingress.labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount}}
+  template:
+    metadata:
+      labels:
+        app: {{ template "gitlab.fullname" . }}
+    spec:
+      containers:
+      - name: {{ template "gitlab.fullname" . }}
+        image: {{ .Values.image.repository }}
+        imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
+        env:
+        - name: GITLAB_OMNIBUS_CONFIG
+          value: {{ default "" .Values.externalUrl | quote }}
+        ports:
+        - name: ssh
+          containerPort: 22
+        - name: registry
+          containerPort: 446
+        - name: https
+          containerPort: 443
+        livenessProbe:
+          httpGet:
+            path: /help
+            port: 443
+          # This pod takes a very long time to start up. Be cautious when
+          # lowering this value to avoid Pod death during startup.
+          initialDelaySeconds: 200
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /help
+            port: {{ .Values.readinessPort }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - mountPath: "/etc/gitlab"
+          name: {{ template "gitlab.name" . }}-config-storage
+        - mountPath: "/var/log/gitlab"
+          name: {{ template "gitlab.name" . }}-logs-storage
+        - mountPath: "/var/opt/gitlab"
+          name: {{ template "gitlab.name" . }}-data-storage
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      volumes:
+      - name: {{ template "gitlab.name" . }}-config-storage
+        persistentVolumeClaim:
+          claimName: {{ template "gitlab.name" . }}-config-pvc
+      - name: {{ template "gitlab.name" . }}-logs-storage
+        persistentVolumeClaim:
+          claimName: {{ template "gitlab.name" . }}-logs-pvc
+      - name: {{ template "gitlab.name" . }}-data-storage
+        persistentVolumeClaim:
+          claimName: {{ template "gitlab.name" . }}-data-pvc

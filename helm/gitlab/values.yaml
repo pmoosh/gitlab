@@ -1,0 +1,81 @@
+# Default values for gitlab_shell.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nameOverride: ""
+fullnameOverride: ""
+
+
+replicaCount: 1
+image:
+  repository: iankoulski/gitlab
+  pullPolicy: Always
+imagePullSecrets: []
+externalUrl: "external_url 'https://gitlab.prod.ep.shell.com'; nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-gitlab.crt'; nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-gitlab.key'; registry_external_url 'https://registry.prod.ep.shell.com'; registry_nginx['enable'] = true; registry_nginx['listen_port'] = 446; registry_nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-registry.crt'; registry_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-registry.key';"
+
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 80
+
+ingress:
+  enabled: true
+  registry_hostname: registry.example.com
+  gitlab_hostname: gitlab.example.com
+  annotations:
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"RedirectConfig":{"Port":"443","Protocol":"HTTPS","StatusCode":"HTTP_301"},"Type":"redirect"}'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:258010404141:certificate/496bdc06-d75b-4c42-b8d4-46adfdfd4cde
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/security-groups: sg-01b4ec08704a7ee87
+    alb.ingress.kubernetes.io/success-codes: 200-403
+    kubernetes.io/ingress.class: alb
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+storage:
+  data_pv_size: 10Gi
+  lab_config_pv_size: 10Gi
+  logs_pv_size: 10Gi
+  efs_hostname: "fs-d86fd058.efs.us-east-1.amazonaws.com"

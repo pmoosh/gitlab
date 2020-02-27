@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"RedirectConfig":{"Port":"443","Protocol":"HTTPS","StatusCode":"HTTP_301"},"Type":"redirect"}'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:258010404141:certificate/496bdc06-d75b-4c42-b8d4-46adfdfd4cde
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/security-groups: sg-01b4ec08704a7ee87
+    alb.ingress.kubernetes.io/success-codes: 200-403
+    kubernetes.io/ingress.class: alb
+  name: gitlab
+  namespace: gitlab
+spec:
+  rules:
+  - host: gitlab.prod.ep.shell.com
+    http:
+      paths:
+      - backend:
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+      - backend:
+          serviceName: gitlab
+          servicePort: 443
+  - host: registry.prod.ep.shell.com
+    http:
+      paths:
+      - backend:
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+      - backend:
+          serviceName: gitlab
+          servicePort: 446
