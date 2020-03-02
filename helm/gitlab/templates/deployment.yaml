@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "gitlab.fullname" . }}
+  name: {{ template "gitlab.name" . }}
   labels:
     app: {{ template "gitlab.name" . }}
     chart: {{ template "gitlab.chart" . }}
@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "gitlab.fullname" . }}
+        app: {{ template "gitlab.name" . }}
     spec:
       containers:
       - name: {{ template "gitlab.fullname" . }}
@@ -33,20 +33,22 @@ spec:
           containerPort: 443
         livenessProbe:
           httpGet:
+            scheme: HTTPS
             path: /help
             port: 443
           # This pod takes a very long time to start up. Be cautious when
           # lowering this value to avoid Pod death during startup.
-          initialDelaySeconds: 200
+          initialDelaySeconds: 300
           timeoutSeconds: 1
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 10
         readinessProbe:
           httpGet:
+            scheme: HTTPS                 
             path: /help
             port: 443
-          initialDelaySeconds: 30
+          initialDelaySeconds: 120
           timeoutSeconds: 1
           periodSeconds: 10
           successThreshold: 1
