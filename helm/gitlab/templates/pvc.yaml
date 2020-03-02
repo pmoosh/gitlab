@@ -3,37 +3,46 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "gitlab.name" . }}-config-pvc
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-efs"
 spec:
   storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.storage.config_pvc_size }}
-  volumeName: {{ template "gitlab.name" . }}-lab-config-pv
+      storage: {{ .Values.storage.config_pv_size }}
+  volumeName: {{ template "gitlab.name" . }}-config-pv
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "gitlab.name" . }}-logs-pvc
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-efs"
 spec:
   storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.storage.logs_pvc_size }}
+      storage: {{ .Values.storage.logs_pv_size }}
   volumeName: {{ template "gitlab.name" . }}-logs-pv
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "gitlab.name" . }}-data-pvc
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-efs"
 spec:
   storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.storage.data_pvc_size }}
+      storage: {{ .Values.storage.data_pv_size }}
   volumeName: {{ template "gitlab.name" . }}-data-pv

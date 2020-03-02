@@ -8,6 +8,7 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: aws-efs
   nfs:
     server: {{ .Values.storage.efs_hostname }}
     path: "/ops/{{ template "gitlab.name" . }}/config"
@@ -22,6 +23,7 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: aws-efs
   nfs:
     server: {{ .Values.storage.efs_hostname }}
     path: "/ops/{{ template "gitlab.name" . }}/logs"
@@ -36,6 +38,8 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: aws-efs
   nfs:
     server: {{ .Values.storage.efs_hostname }}
     path: "/ops/{{ template "gitlab.name" . }}/data"
+       

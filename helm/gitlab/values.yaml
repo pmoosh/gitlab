@@ -10,7 +10,7 @@ image:
   repository: iankoulski/gitlab
   pullPolicy: Always
 imagePullSecrets: []
-externalUrl: "external_url 'https://gitlab.prod.ep.shell.com'; nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-gitlab.crt'; nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-gitlab.key'; registry_external_url 'https://registry.prod.ep.shell.com'; registry_nginx['enable'] = true; registry_nginx['listen_port'] = 446; registry_nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-registry.crt'; registry_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-registry.key';"
+externalUrl: "external_url 'https://gitlab.shell.shanux.com'; nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-gitlab.crt'; nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-gitlab.key'; registry_external_url 'https://registry.shell.shanux.com'; registry_nginx['enable'] = true; registry_nginx['listen_port'] = 446; registry_nginx['ssl_certificate'] = '/etc/gitlab/ssl/ssl-registry.crt'; registry_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/ssl-registry.key';"
 
 
 
@@ -36,20 +36,19 @@ securityContext: {}
 
 service:
   type: NodePort
-  port: 80
 
 ingress:
   enabled: true
-  registry_hostname: registry.example.com
-  gitlab_hostname: gitlab.example.com
+  registry_hostname: registry.shell.shanux.com
+  gitlab_hostname: gitlab.shell.shanux.com
   annotations:
     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"RedirectConfig":{"Port":"443","Protocol":"HTTPS","StatusCode":"HTTP_301"},"Type":"redirect"}'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:258010404141:certificate/496bdc06-d75b-4c42-b8d4-46adfdfd4cde
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:695292474035:certificate/cc0ed28a-f2be-4d6b-a56c-a9a7ceabf456
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/security-groups: sg-01b4ec08704a7ee87
     alb.ingress.kubernetes.io/success-codes: 200-403
+    alb.ingress.kubernetes.io/security-groups: sg-0ca376e67bec9e45c
     kubernetes.io/ingress.class: alb
   tls: []
   #  - secretName: chart-example-tls
@@ -76,6 +75,6 @@ affinity: {}
 
 storage:
   data_pv_size: 10Gi
-  lab_config_pv_size: 10Gi
+  config_pv_size: 10Gi
   logs_pv_size: 10Gi
-  efs_hostname: "fs-d86fd058.efs.us-east-1.amazonaws.com"
+  efs_hostname: "fs-1e28bcb4.efs.us-west-2.amazonaws.com"

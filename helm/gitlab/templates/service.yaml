@@ -8,16 +8,16 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
-  type: {{ .Values.serviceType }}
+  type: {{ .Values.service.type }}
   ports:
   - name: ssh
-    port: {{ .Values.sshPort | int }}
-    targetPort: ssh
-  - name: https
-    port: {{ .Values.httpsPort | int }}
-    targetPort: http
+    port: 22
+    targetPort: 22
+  - name: gitlab
+    port: 443
+    targetPort: 443
   - name: registry
-    port: {{ .Values.registryPort | int }}
-    targetPort: registry
+    port: 446
+    targetPort: 446
   selector:
     app: {{ template "gitlab.name" . }}

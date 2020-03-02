@@ -24,7 +24,7 @@ spec:
           serviceName: ssl-redirect
           servicePort: use-annotation
       - backend:
-          serviceName: gitlab
+          serviceName: {{ template "gitlab.name" . }}
           servicePort: 443
   - host: {{.Values.ingress.registry_hostname }}
     http:
@@ -33,7 +33,7 @@ spec:
           serviceName: ssl-redirect
           servicePort: use-annotation
       - backend:
-          serviceName: registry
+          serviceName: {{ template "gitlab.name" . }}
           servicePort: 446
   {{- if .Values.ingress.tls }}
   tls:
